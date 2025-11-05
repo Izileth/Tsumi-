@@ -18,7 +18,7 @@ export default function LoginScreen() {
       setErrorMessage("Por favor, preencha todos os campos.");
       return;
     }
-    if (username === "kumi" && password === "yakuza") {
+    if (username === "tsumi" && password === "yakuza") {
       login();
     } else {
       setErrorMessage("Usuário ou senha inválidos.");

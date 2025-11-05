@@ -182,7 +182,7 @@ export default function ExploreScreen() {
         <View className="items-center py-12">
           <View className="flex-row items-center gap-3 mb-3">
             <View className="w-12 h-px bg-neutral-800" />
-            <Text className="text-neutral-700 text-xl"> 探索</Text>
+            <Text className="text-neutral-700 text-xl">罪</Text>
             <View className="w-12 h-px bg-neutral-800" />
           </View>
           <Text className="text-neutral-700 text-xs tracking-[0.2em]">

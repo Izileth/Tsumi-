@@ -1,90 +1,11 @@
 import { View, Text, ScrollView, Pressable } from "react-native";
 import { useState } from "react";
+import { categories, marketItems } from "../../constants/market-data";
 
 export default function MarketScreen() {
   const [selectedCategory, setSelectedCategory] = useState("all");
 
-  const categories = [
-    { id: "all", label: "Tudo", icon: "全" },
-    { id: "weapons", label: "Armas", icon: "刀" },
-    { id: "intel", label: "Intel", icon: "情" },
-    { id: "resources", label: "Recursos", icon: "資" },
-  ];
 
-  const marketItems = [
-    {
-      id: 1,
-      name: "Katana Honjo Masamune",
-      category: "weapons",
-      price: 50000,
-      rarity: "legendary",
-      description: "Lâmina lendária forjada por mestres. +50 de poder de combate.",
-      stock: 1,
-    },
-    {
-      id: 2,
-      name: "Dossier: Polícia de Shibuya",
-      category: "intel",
-      price: 15000,
-      rarity: "rare",
-      description: "Informações sobre rotas de patrulha e turnos policiais.",
-      stock: 3,
-    },
-    {
-      id: 3,
-      name: "Contatos do Porto",
-      category: "resources",
-      price: 8000,
-      rarity: "common",
-      description: "Acesso a rotas de contrabando marítimas. +20% renda de importação.",
-      stock: 5,
-    },
-    {
-      id: 4,
-      name: "Pistola Nambu Type 14",
-      category: "weapons",
-      price: 12000,
-      rarity: "common",
-      description: "Arma de fogo discreta para operações silenciosas. +25 poder.",
-      stock: 7,
-    },
-    {
-      id: 5,
-      name: "Mapa dos Túneis",
-      category: "intel",
-      price: 25000,
-      rarity: "epic",
-      description: "Esquema completo do sistema de túneis subterrâneos de Tóquio.",
-      stock: 2,
-    },
-    {
-      id: 6,
-      name: "Licenças Falsas",
-      category: "resources",
-      price: 5000,
-      rarity: "common",
-      description: "Documentação forjada para operações legais. Reduz atenção policial.",
-      stock: 10,
-    },
-    {
-      id: 7,
-      name: "Wakizashi Clássica",
-      category: "weapons",
-      price: 18000,
-      rarity: "rare",
-      description: "Espada curta tradicional do samurai. +35 poder, +10 honra.",
-      stock: 4,
-    },
-    {
-      id: 8,
-      name: "Lista de Juízes Corruptos",
-      category: "intel",
-      price: 35000,
-      rarity: "legendary",
-      description: "Nomes e fraquezas de autoridades compráveis. Elimina processos.",
-      stock: 1,
-    },
-  ];
 
   const filteredItems = selectedCategory === "all" 
     ? marketItems 
