@@ -1,10 +1,10 @@
 {
   "expo": {
-    "name": "TSUMI",
-    "slug": "Tsumi",
+    "name": "Tsumi",
+    "slug": "yakuza-brotherhood",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/ad.icon.png",
+    "icon": "./assets/images/icon.png",
     "backgroundColor": "#000000",
     "scheme": "app",
     "userInterfaceStyle": "automatic",
@@ -19,9 +19,8 @@
     "android": {
       "adaptiveIcon": {
         "backgroundColor": "#000000",
-        "foregroundImage": "./assets/images/ad.icon.png",
-        "backgroundImage": "./assets/images/ad.icon.png",
-        "monochromeImage": "./assets/images/ad.icon.png"
+        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "monochromeImage": "./assets/images/adaptive-icon.png"
       },
       "package": "com.kawak.Tsumi",
       "edgeToEdgeEnabled": true,
@@ -29,7 +28,7 @@
     },
     "web": {
       "output": "static",
-      "favicon": "./assets/images/favicon.png",
+      "favicon": "./assets/images/icon.png",
       "bundler": "metro"
     },
     "plugins": [
@@ -37,8 +36,7 @@
       [
         "expo-splash-screen",
         {
-          "image": "https://i.pinimg.com/1200x/b0/4c/2c/b04c2cf4c6130897812a2dbbf3e1cdae.jpg",
-          "imageWidth": 200,
+          "image": "./assets/images/icon.png",
           "resizeMode": "contain",
           "backgroundColor": "#000000",
           "dark": {
