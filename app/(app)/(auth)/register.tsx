@@ -1,9 +1,11 @@
 import { View, Text, TextInput, Pressable } from "react-native";
 import { useState } from "react";
 import { Link } from "expo-router";
-import { Lock, Eye, EyeOff } from "lucide-react-native";
+import { User, Lock, Eye, EyeOff, Mail } from "lucide-react-native";
 
-export default function ResetPasswordScreen() {
+export default function RegisterScreen() {
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -11,16 +13,22 @@ export default function ResetPasswordScreen() {
 
   const [errorMessage, setErrorMessage] = useState("");
 
-  const handleResetPassword = () => {
+  const handleRegister = () => {
     setErrorMessage(""); // Clear previous errors
 
-    if (!password || !confirmPassword) {
+    if (!username || !email || !password || !confirmPassword) {
       setErrorMessage("Por favor, preencha todos os campos.");
       return;
     }
 
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setErrorMessage("Por favor, insira um email válido.");
+      return;
+    }
+
     if (password.length < 6) {
-      setErrorMessage("A nova senha deve ter pelo menos 6 caracteres.");
+      setErrorMessage("A senha deve ter pelo menos 6 caracteres.");
       return;
     }
 
@@ -29,9 +37,9 @@ export default function ResetPasswordScreen() {
       return;
     }
 
-    // If validation passes, proceed with reset password logic
-    console.log("Resetting password...");
-    // Here you would typically call an API to reset the password
+    // If all validations pass, proceed with registration logic
+    console.log("Registration data:", { username, email, password });
+    // Here you would typically call an authentication service
   };
 
   return (
@@ -51,15 +59,40 @@ export default function ResetPasswordScreen() {
           <View className="w-16 h-0.5 bg-red-600 mt-2" />
         </View>
 
+        {/* Form */}
         <View className="w-full max-w-md">
-          <Text className="text-white text-2xl font-bold text-center mb-2">Redefinir senha</Text>
-          <Text className="text-neutral-400 text-center mb-8">Crie uma nova senha para sua conta.</Text>
+          {/* Username */}
+          <View className="flex-row items-center w-full h-14 bg-neutral-950 rounded-xl px-4 mb-4 border border-neutral-900">
+            <User size={20} color="#666666" strokeWidth={2} />
+            <TextInput
+              placeholder="Nome de usuário"
+              placeholderTextColor="#666"
+              value={username}
+              onChangeText={(text) => { setUsername(text); setErrorMessage(""); }}
+              className="flex-1 text-white text-base ml-3"
+              autoCapitalize="none"
+            />
+          </View>
+
+          {/* Email */}
+          <View className="flex-row items-center w-full h-14 bg-neutral-950 rounded-xl px-4 mb-4 border border-neutral-900">
+            <Mail size={20} color="#666666" strokeWidth={2} />
+            <TextInput
+              placeholder="Email"
+              placeholderTextColor="#666"
+              value={email}
+              onChangeText={(text) => { setEmail(text); setErrorMessage(""); }}
+              className="flex-1 text-white text-base ml-3"
+              autoCapitalize="none"
+              keyboardType="email-address"
+            />
+          </View>
 
           {/* Password */}
           <View className="flex-row items-center w-full h-14 bg-neutral-950 rounded-xl px-4 mb-4 border border-neutral-900">
             <Lock size={20} color="#666666" strokeWidth={2} />
             <TextInput
-              placeholder="Nova Senha"
+              placeholder="Senha"
               placeholderTextColor="#666"
               secureTextEntry={!showPassword}
               value={password}
@@ -79,7 +112,7 @@ export default function ResetPasswordScreen() {
           <View className="flex-row items-center w-full h-14 bg-neutral-950 rounded-xl px-4 mb-4 border border-neutral-900">
             <Lock size={20} color="#666666" strokeWidth={2} />
             <TextInput
-              placeholder="Confirmar Nova Senha"
+              placeholder="Confirmar Senha"
               placeholderTextColor="#666"
               secureTextEntry={!showConfirmPassword}
               value={confirmPassword}
@@ -99,24 +132,27 @@ export default function ResetPasswordScreen() {
             <Text className="text-red-500 text-sm text-center mb-4">{errorMessage}</Text>
           ) : null}
 
-          {/* Reset Password Button */}
+          {/* Register Button */}
           <Pressable 
-            onPress={handleResetPassword}
+            onPress={handleRegister}
             className="w-full h-14 bg-red-600 rounded-xl justify-center items-center active:bg-red-700 shadow-lg shadow-red-600/40 mt-6"
           >
-            <Text className="text-lg font-bold text-white tracking-wide">Redefinir senha</Text>
+            <Text className="text-lg font-bold text-white tracking-wide">Cadastrar</Text>
           </Pressable>
 
           {/* Divider */}
           <View className="flex-row items-center my-8">
             <View className="flex-1 h-px bg-neutral-900" />
+            <Text className="text-neutral-600 px-4 text-xs font-semibold">OU</Text>
+            <View className="flex-1 h-px bg-neutral-900" />
           </View>
 
-          {/* Back to Login */}
+          {/* Sign In */}
           <View className="flex-row justify-center items-center">
-            <Link href="/login" asChild>
+            <Text className="text-neutral-400 text-sm">Já tem uma conta? </Text>
+            <Link href="/(app)/(auth)/login" asChild>
               <Pressable>
-                <Text className="text-red-600 text-sm font-semibold">Voltar para o Login</Text>
+                <Text className="text-red-600 text-sm font-semibold">Entre</Text>
               </Pressable>
             </Link>
           </View>

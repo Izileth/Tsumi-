@@ -1,16 +1,14 @@
-import { View, Text, ScrollView, Pressable } from "react-native";
+import { achievements, attributes, history, playerStats } from "@/constants";
 import { useState } from "react";
-import { useAuth } from "../auth-context";
-import { playerStats, attributes, achievements, history } from "../../constants/profile-data";
-import { CustomModal } from "../../components/ui/custom-modal";
+import { Pressable, ScrollView, Text, View } from "react-native";
+import { CustomModal } from "../../../components/ui/custom-modal";
+import { skills } from "../../../constants/skills-data";
+import { useAuth } from "../../context/auth-context";
 
 export default function ProfileScreen() {
   const { logout } = useAuth();
   const [selectedTab, setSelectedTab] = useState("stats");
   const [isModalVisible, setModalVisible] = useState(false);
-
-
-
 
   const getRarityColor = (rarity: string) => {
     switch (rarity) {
@@ -128,8 +126,8 @@ export default function ProfileScreen() {
                 className="active:opacity-70"
               >
                 <View className={`px-5 py-3 rounded-lg border ${selectedTab === "stats"
-                    ? 'bg-red-600 border-red-500'
-                    : 'bg-zinc-950 border-neutral-800'
+                  ? 'bg-red-600 border-red-500'
+                  : 'bg-zinc-950 border-neutral-800'
                   }`}>
                   <Text className={`text-sm font-semibold ${selectedTab === "stats" ? 'text-white' : 'text-neutral-400'
                     }`}>
@@ -143,8 +141,8 @@ export default function ProfileScreen() {
                 className="active:opacity-70"
               >
                 <View className={`px-5 py-3 rounded-lg border ${selectedTab === "achievements"
-                    ? 'bg-red-600 border-red-500'
-                    : 'bg-zinc-950 border-neutral-800'
+                  ? 'bg-red-600 border-red-500'
+                  : 'bg-zinc-950 border-neutral-800'
                   }`}>
                   <Text className={`text-sm font-semibold ${selectedTab === "achievements" ? 'text-white' : 'text-neutral-400'
                     }`}>
@@ -158,12 +156,27 @@ export default function ProfileScreen() {
                 className="active:opacity-70"
               >
                 <View className={`px-5 py-3 rounded-lg border ${selectedTab === "history"
-                    ? 'bg-red-600 border-red-500'
-                    : 'bg-zinc-950 border-neutral-800'
+                  ? 'bg-red-600 border-red-500'
+                  : 'bg-zinc-950 border-neutral-800'
                   }`}>
                   <Text className={`text-sm font-semibold ${selectedTab === "history" ? 'text-white' : 'text-neutral-400'
                     }`}>
                     📜 Histórico
+                  </Text>
+                </View>
+              </Pressable>
+
+              <Pressable
+                onPress={() => setSelectedTab("skills")}
+                className="active:opacity-70"
+              >
+                <View className={`px-5 py-3 rounded-lg border ${selectedTab === "skills"
+                  ? 'bg-red-600 border-red-500'
+                  : 'bg-zinc-950 border-neutral-800'
+                  }`}>
+                  <Text className={`text-sm font-semibold ${selectedTab === "skills" ? 'text-white' : 'text-neutral-400'
+                    }`}>
+                    🛠️ Habilidades
                   </Text>
                 </View>
               </Pressable>
@@ -360,6 +373,47 @@ export default function ProfileScreen() {
             </Pressable>
           </View>
         )}
+
+        {/* SKILLS TAB */}
+        {selectedTab === "skills" && (
+          <View className="mb-8">
+            <View className="flex-row items-center mb-4">
+              <Text className="text-red-500 text-base font-bold">技能</Text>
+              <View className="flex-1 h-px bg-neutral-800 ml-3" />
+            </View>
+
+            {skills.map((skill) => (
+              <View
+                key={skill.id}
+                className="bg-zinc-950 border border-neutral-800 rounded-lg p-4 mb-3"
+              >
+                <View className="flex-row items-start gap-3">
+                  <View className="w-10 h-10 bg-red-950/30 border border-red-900/50 rounded-lg items-center justify-center">
+                    <Text className="text-xl">{skill.icon}</Text>
+                  </View>
+                  <View className="flex-1">
+                    <View className="flex-row justify-between items-center mb-1">
+                      <Text className="text-white text-sm font-semibold">
+                        {skill.nameJP} {skill.name}
+                      </Text>
+                      <Text className="text-white text-sm font-bold">Lvl {skill.level}</Text>
+                    </View>
+                    <Text className="text-neutral-400 text-xs mb-2">
+                      {skill.description}
+                    </Text>
+                    <View className="bg-neutral-900 h-2 rounded-full overflow-hidden">
+                      <View
+                        className={`${skill.color} h-full`}
+                        style={{ width: `${skill.progress}%` }}
+                      />
+                    </View>
+                  </View>
+                </View>
+              </View>
+            ))}
+          </View>
+        )}
+
 
         {/* Modal Button */}
         <View className="mb-6 gap-0 flex flex-col items-center  w-full max-w-full ">

@@ -83,7 +83,7 @@ export default function ForgotPasswordScreen() {
 
           {/* Back to Login */}
           <View className="flex-row justify-center items-center">
-            <Link href="/login" asChild>
+            <Link href="/(app)/(auth)/login" asChild>
               <Pressable>
                 <Text className="text-red-600 text-sm font-semibold">Voltar para o Login</Text>
               </Pressable>

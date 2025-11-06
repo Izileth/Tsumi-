@@ -1,6 +1,6 @@
 import { View, Text, ScrollView, Pressable } from "react-native";
 import { useState } from "react";
-import { clanMembers, territories, missions } from "../../constants/clan-data";
+import { clanMembers, clanTerritories, clanMissions } from "@/constants";
 
 export default function ClanScreen() {
   const [selectedTab, setSelectedTab] = useState("members");
@@ -241,7 +241,7 @@ export default function ClanScreen() {
               <View className="flex-1 h-px bg-neutral-800 ml-3" />
             </View>
 
-            {territories.map((territory) => (
+            {clanTerritories.map((territory) => (
               <View
                 key={territory.id}
                 className="bg-zinc-950 border border-neutral-800 rounded-lg p-4 mb-3"
@@ -312,7 +312,7 @@ export default function ClanScreen() {
               </Text>
             </View>
 
-            {missions.map((mission) => {
+            {clanMissions.map((mission) => {
               const diffStyle = getDifficultyColor(mission.difficulty);
               return (
                 <View

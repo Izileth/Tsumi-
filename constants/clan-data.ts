@@ -61,7 +61,7 @@ export const clanMembers = [
   }
 ];
 
-export const territories = [
+export const clanTerritories = [
   {
     id: 1,
     name: "Shibuya",
@@ -96,7 +96,7 @@ export const territories = [
   }
 ];
 
-export const missions = [
+export const clanMissions = [
   {
     id: 1,
     title: "Coletar Tributo",

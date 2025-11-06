@@ -5,11 +5,11 @@ import { useEffect, useState } from "react";
 
 import { StatusBar } from "expo-status-bar";
 
-import { AuthProvider, useAuth } from "./auth-context";
+import { AuthProvider, useAuth } from "./context/auth-context";
 
 import LoadingScreen from "./_loading";
 
-import Animated, { useSharedValue, useAnimatedStyle, withTiming, runOnJS } from 'react-native-reanimated';
+import Animated, { runOnJS, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 
 import { View } from 'react-native';
 
@@ -24,7 +24,7 @@ const InitialLayout = () => {
 
   const router = useRouter();
 
-  
+
 
   const [isSplashAnimationFinished, setSplashAnimationFinished] = useState(false);
 
@@ -49,9 +49,9 @@ const InitialLayout = () => {
     }
     else {
       if (inAppGroup) {
-        router.replace("/login");
+        router.replace("/(app)/(auth)/login");
       } else if (!segments?.[0]) {
-        router.replace("/login");
+        router.replace("/(app)/(auth)/login");
       }
     }
   }, [isAuthenticated, isSplashAnimationFinished, segments, router]);

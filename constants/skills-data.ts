@@ -1,0 +1,32 @@
+export const skills = [
+  {
+    id: 1,
+    name: "Kendo",
+    nameJP: "剣道",
+    level: 3,
+    progress: 60,
+    description: "A arte da espada japonesa. Aumenta o dano com katanas.",
+    icon: "🗡️",
+    color: "bg-red-500",
+  },
+  {
+    id: 2,
+    name: "Jiu-Jitsu",
+    nameJP: "柔術",
+    level: 2,
+    progress: 80,
+    description: "Técnicas de combate desarmado. Aumenta o dano desarmado.",
+    icon: "🥋",
+    color: "bg-blue-500",
+  },
+  {
+    id: 3,
+    name: "Intimidação",
+    nameJP: "脅迫",
+    level: 4,
+    progress: 30,
+    description: "A capacidade de influenciar os outros através do medo.",
+    icon: "😠",
+    color: "bg-yellow-500",
+  },
+];

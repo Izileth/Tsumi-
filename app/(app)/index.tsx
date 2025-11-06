@@ -134,9 +134,31 @@ export default function HomeScreen() {
 
           <Link href="/market" asChild>
             <Pressable className="active:opacity-70">
-              <View className="flex-row items-center justify-between bg-zinc-950 p-4 rounded-lg border border-neutral-800">
+              <View className="flex-row items-center justify-between bg-zinc-950 p-4 rounded-lg border border-neutral-800 mb-3">
                 <View className="flex-row items-center gap-3">
                   <Text className="text-white font-semibold text-base">Mercado Negro</Text>
+                </View>
+                <Text className="text-red-500">→</Text>
+              </View>
+            </Pressable>
+          </Link>
+
+          <Link href="/missions" asChild>
+            <Pressable className="active:opacity-70">
+              <View className="flex-row items-center justify-between bg-zinc-950 p-4 rounded-lg border border-neutral-800 mb-3">
+                <View className="flex-row items-center gap-3">
+                  <Text className="text-white font-semibold text-base">Missões</Text>
+                </View>
+                <Text className="text-red-500">→</Text>
+              </View>
+            </Pressable>
+          </Link>
+
+          <Link href="/dojo" asChild>
+            <Pressable className="active:opacity-70">
+              <View className="flex-row items-center justify-between bg-zinc-950 p-4 rounded-lg border border-neutral-800">
+                <View className="flex-row items-center gap-3">
+                  <Text className="text-white font-semibold text-base">Dojo</Text>
                 </View>
                 <Text className="text-red-500">→</Text>
               </View>

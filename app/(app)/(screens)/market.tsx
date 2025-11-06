@@ -1,6 +1,6 @@
 import { View, Text, ScrollView, Pressable } from "react-native";
 import { useState } from "react";
-import { categories, marketItems } from "../../constants/market-data";
+import { categories, marketItems } from "@/constants/market-data";
 
 export default function MarketScreen() {
   const [selectedCategory, setSelectedCategory] = useState("all");
