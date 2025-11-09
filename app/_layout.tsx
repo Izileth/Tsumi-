@@ -17,103 +17,59 @@ import '@/global.css';
 
 
 const InitialLayout = () => {
-
-  const { isAuthenticated } = useAuth();
-
+  const { user, loading } = useAuth();
   const segments = useSegments();
-
   const router = useRouter();
 
-
-
   const [isSplashAnimationFinished, setSplashAnimationFinished] = useState(false);
-
   const [isAppReady, setAppReady] = useState(false);
-
-
-
 
   const opacity = useSharedValue(1);
 
+  useEffect(() => {
+    if (loading || !isSplashAnimationFinished) return;
 
+    const inAuthGroup = segments[0] === '(auth)';
+
+    if (user && !inAuthGroup) {
+      router.replace('/(app)');
+    } else if (!user && !inAuthGroup) {
+      router.replace('/login');
+    }
+  }, [user, loading, isSplashAnimationFinished, segments, router]);
 
   useEffect(() => {
-    if (!isSplashAnimationFinished) return;
-
-    const inAppGroup = segments[0] === "(app)";
-
-    if (isAuthenticated) {
-      if (!inAppGroup) {
-        router.replace("/(app)");
-      }
-    }
-    else {
-      if (inAppGroup) {
-        router.replace("/(app)/(auth)/login");
-      } else if (!segments?.[0]) {
-        router.replace("/(app)/(auth)/login");
-      }
-    }
-  }, [isAuthenticated, isSplashAnimationFinished, segments, router]);
-
-
-
-  useEffect(() => {
-
     if (isSplashAnimationFinished) {
-
       opacity.value = withTiming(0, { duration: 400 }, (finished) => {
-
         if (finished) {
-
           runOnJS(setAppReady)(true);
-
         }
-
       });
-
     }
-
   }, [isSplashAnimationFinished, opacity]);
 
-
-
   const animatedStyle = useAnimatedStyle(() => {
-
     return {
-
       opacity: opacity.value,
-
     };
-
   });
 
-
+  if (loading && !isSplashAnimationFinished) {
+    return <LoadingScreen onAnimationEnd={() => setSplashAnimationFinished(true)} />;
+  }
 
   return (
-
     <View style={{ flex: 1 }}>
-
       <Slot />
-
       <StatusBar style="light" backgroundColor="#000000" translucent />
 
-
-
       {!isAppReady && (
-
         <Animated.View style={[{ flex: 1, position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: 1 }, animatedStyle]}>
-
           <LoadingScreen onAnimationEnd={() => setSplashAnimationFinished(true)} />
-
         </Animated.View>
-
       )}
-
     </View>
-
   );
-
 };
 
 export default function RootLayout() {

@@ -1,7 +1,8 @@
-import { View, Text, TextInput, Pressable } from "react-native";
+import { View, Text, TextInput, Pressable, Alert } from "react-native";
 import { useState } from "react";
 import { useRouter } from "expo-router";
 import { Lock, Eye, EyeOff } from "lucide-react-native";
+import { supabase } from "../../lib/supabase";
 
 export default function ResetPasswordScreen() {
   const router = useRouter();
@@ -12,7 +13,7 @@ export default function ResetPasswordScreen() {
 
   const [errorMessage, setErrorMessage] = useState("");
 
-  const handleResetPassword = () => {
+  const handleResetPassword = async () => {
     setErrorMessage(""); // Clear previous errors
 
     if (!password || !confirmPassword) {
@@ -30,9 +31,26 @@ export default function ResetPasswordScreen() {
       return;
     }
 
-    // If validation passes, proceed with reset password logic
-    console.log("Resetting password...");
-    // Here you would typically call an API to reset the password
+    try {
+      const { error } = await supabase.auth.updateUser({ password: password });
+
+      if (error) {
+        throw error;
+      }
+
+      Alert.alert(
+        "Senha Redefinida",
+        "Sua senha foi alterada com sucesso.",
+        [{ text: "OK", onPress: () => router.replace('/(app)') }]
+      );
+
+    } catch (error) {
+      if (error instanceof Error) {
+        setErrorMessage(error.message);
+      } else {
+        setErrorMessage("Ocorreu um erro desconhecido.");
+      }
+    }
   };
 
   return (

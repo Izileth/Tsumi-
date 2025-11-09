@@ -1,12 +1,12 @@
 {
   "expo": {
     "name": "Tsumi",
-    "slug": "yakuza-brotherhood",
+    "slug": "Tsumi",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "backgroundColor": "#000000",
-    "scheme": "app",
+    "backgroundColor": "#0B0B0B",
+    "scheme": "tsumi",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
@@ -16,21 +16,6 @@
         "ITSAppUsesNonExemptEncryption": false
       }
     },
-    "android": {
-      "adaptiveIcon": {
-        "backgroundColor": "#000000",
-        "foregroundImage": "./assets/images/adaptive-icon.png",
-        "monochromeImage": "./assets/images/adaptive-icon.png"
-      },
-      "package": "com.kawak.Tsumi",
-      "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
-    },
-    "web": {
-      "output": "static",
-      "favicon": "./assets/images/icon.png",
-      "bundler": "metro"
-    },
     "plugins": [
       "expo-router",
       [
@@ -38,13 +23,30 @@
         {
           "image": "./assets/images/icon.png",
           "resizeMode": "contain",
-          "backgroundColor": "#000000",
+          "backgroundColor": "#0B0B0B",
           "dark": {
-            "backgroundColor": "#000000"
+            "backgroundColor": "#0B0B0B"
           }
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/images/icon.png",
+          "color": "#FF231F7C"
         }
       ]
     ],
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#0B0B0B",
+        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "monochromeImage": "./assets/images/adaptive-icon.png"
+      },
+      "package": "com.kawak.Tsumi",
+      "edgeToEdgeEnabled": true,
+      "predictiveBackGestureEnabled": false
+    },
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true

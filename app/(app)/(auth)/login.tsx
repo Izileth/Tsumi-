@@ -1,28 +1,33 @@
-import { View, Text, TextInput, Pressable } from "react-native";
 import { useState } from "react";
-import { useAuth } from "../../context/auth-context";
+import { View, Text, TextInput, Pressable } from "react-native";
 import { useRouter } from "expo-router";
-import { User, Lock, Eye, EyeOff } from "lucide-react-native";
+import { Eye, EyeOff, Lock, User } from "lucide-react-native";
+import { useAuth } from "../../context/auth-context";
 
 export default function LoginScreen() {
-  const { login } = useAuth();
+  const { signIn } = useAuth();
   const router = useRouter();
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
   const [errorMessage, setErrorMessage] = useState("");
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     setErrorMessage(""); // Clear previous errors
-    if (!username || !password) {
+    if (!email || !password) {
       setErrorMessage("Por favor, preencha todos os campos.");
       return;
     }
-    if (username === "tsumi" && password === "yakuza") {
-      login();
-    } else {
-      setErrorMessage("Usuário ou senha inválidos.");
+    try {
+      await signIn(email, password);
+      // The router replacement is handled by the AuthProvider's useProtectedRoute hook
+    } catch (error) {
+      if (error instanceof Error) {
+        setErrorMessage(error.message);
+      } else {
+        setErrorMessage("Ocorreu um erro desconhecido durante o login.");
+      }
     }
   };
 
@@ -45,16 +50,17 @@ export default function LoginScreen() {
 
         {/* Form */}
         <View className="w-full max-w-md">
-          {/* Username */}
+          {/* Email */}
           <View className="flex-row items-center w-full h-14 bg-neutral-950 rounded-xl px-4 mb-4 border border-neutral-900">
             <User size={20} color="#666666" strokeWidth={2} />
             <TextInput
-              placeholder="Nome de usuário"
+              placeholder="E-mail"
               placeholderTextColor="#666"
-              value={username}
-              onChangeText={(text) => { setUsername(text); setErrorMessage(""); }}
+              value={email}
+              onChangeText={(text) => { setEmail(text); setErrorMessage(""); }}
               className="flex-1 text-white text-base ml-3"
               autoCapitalize="none"
+              keyboardType="email-address"
             />
           </View>
 

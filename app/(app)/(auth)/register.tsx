@@ -1,7 +1,8 @@
-import { View, Text, TextInput, Pressable } from "react-native";
+import { View, Text, TextInput, Pressable, Alert } from "react-native";
 import { useState } from "react";
 import { useRouter } from "expo-router";
 import { User, Lock, Eye, EyeOff, Mail } from "lucide-react-native";
+import { supabase } from "../../lib/supabase";
 
 export default function RegisterScreen() {
   const router = useRouter();
@@ -14,7 +15,7 @@ export default function RegisterScreen() {
 
   const [errorMessage, setErrorMessage] = useState("");
 
-  const handleRegister = () => {
+  const handleRegister = async () => {
     setErrorMessage(""); // Clear previous errors
 
     if (!username || !email || !password || !confirmPassword) {
@@ -38,9 +39,34 @@ export default function RegisterScreen() {
       return;
     }
 
-    // If all validations pass, proceed with registration logic
-    console.log("Registration data:", { username, email, password });
-    // Here you would typically call an authentication service
+    try {
+      const { error } = await supabase.auth.signUp({
+        email: email,
+        password: password,
+        options: {
+          data: {
+            username: username,
+          },
+        },
+      });
+
+      if (error) {
+        throw error;
+      }
+
+      Alert.alert(
+        "Cadastro realizado!",
+        "Por favor, verifique seu e-mail para confirmar sua conta antes de fazer o login.",
+        [{ text: "OK", onPress: () => router.push('/(app)/(auth)/login') }]
+      );
+
+    } catch (error) {
+      if (error instanceof Error) {
+        setErrorMessage(error.message);
+      } else {
+        setErrorMessage("Ocorreu um erro desconhecido durante o cadastro.");
+      }
+    }
   };
 
   return (

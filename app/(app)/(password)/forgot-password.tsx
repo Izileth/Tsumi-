@@ -1,16 +1,19 @@
-import { View, Text, TextInput, Pressable } from "react-native";
+import { View, Text, TextInput, Pressable, Alert } from "react-native";
 import { useState } from "react";
 import { useRouter } from "expo-router";
 import { Mail } from "lucide-react-native";
+import { supabase } from "../../lib/supabase";
 
 export default function ForgotPasswordScreen() {
   const router = useRouter();
   const [email, setEmail] = useState("");
 
   const [errorMessage, setErrorMessage] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
 
-  const handleSendLink = () => {
-    setErrorMessage(""); // Clear previous errors
+  const handleSendLink = async () => {
+    setErrorMessage("");
+    setSuccessMessage("");
 
     if (!email) {
       setErrorMessage("Por favor, insira seu email.");
@@ -23,9 +26,28 @@ export default function ForgotPasswordScreen() {
       return;
     }
 
-    // If validation passes, proceed with sending reset link logic
-    console.log("Sending reset link to:", email);
-    // Here you would typically call an API to send the reset link
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: 'exp://192.168.3.8:8081/--/(app)/(password)/reset-password', // IMPORTANT: Replace with your actual deep link
+      });
+
+      if (error) {
+        throw error;
+      }
+
+      Alert.alert(
+        "Link Enviado",
+        "Se uma conta com este e-mail existir, um link para redefinir sua senha foi enviado."
+      );
+      setSuccessMessage("Link de redefinição enviado. Verifique seu e-mail.");
+
+    } catch (error) {
+      if (error instanceof Error) {
+        setErrorMessage(error.message);
+      } else {
+        setErrorMessage("Ocorreu um erro desconhecido.");
+      }
+    }
   };
 
   return (
@@ -65,6 +87,9 @@ export default function ForgotPasswordScreen() {
 
           {errorMessage ? (
             <Text className="text-red-500 text-sm text-center mb-4">{errorMessage}</Text>
+          ) : null}
+          {successMessage ? (
+            <Text className="text-green-500 text-sm text-center mb-4">{successMessage}</Text>
           ) : null}
 
           {/* Send Link Button */}

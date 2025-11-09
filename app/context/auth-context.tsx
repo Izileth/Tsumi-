@@ -1,11 +1,15 @@
-
-import { createContext, useContext, useState, ReactNode } from 'react';
-import { useRouter } from 'expo-router';
+import { createContext, useContext, useState, ReactNode, useEffect } from 'react';
+import { useRouter, useSegments } from 'expo-router';
+import { supabase } from '../lib/supabase';
+import { Session, User } from '@supabase/supabase-js';
+import * as Notifications from 'expo-notifications';
 
 interface AuthContextType {
-  isAuthenticated: boolean;
-  login: () => void;
-  logout: () => void;
+  signIn: (email: string, password: string) => Promise<void>;
+  signOut: () => Promise<void>;
+  session: Session | null;
+  user: User | null;
+  loading: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -18,26 +22,80 @@ export const useAuth = () => {
   return context;
 };
 
+function useProtectedRoute(user: User | null) {
+  const segments = useSegments();
+  const router = useRouter();
+
+  useEffect(() => {
+    const inAuthGroup = segments[0] === 'login' || segments[0] === 'register' || segments[0] === 'forgot-password' || segments[0] === 'reset-password';
+
+    if (!user && !inAuthGroup) {
+      router.replace('/login');
+    } else if (user && inAuthGroup) {
+      router.replace('/(app)');
+    }
+  }, [user, segments, router]);
+}
+
 interface AuthProviderProps {
   children: ReactNode;
 }
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const router = useRouter();
+  const [session, setSession] = useState<Session | null>(null);
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  const login = () => {
-    // In a real app, you'd perform authentication here
-    setIsAuthenticated(true);
-    router.replace("/(app)");
-  };
+  useEffect(() => {
+    const fetchSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      setSession(session);
+      setUser(session?.user ?? null);
+      setLoading(false);
+    };
 
-  const logout = () => {
-    setIsAuthenticated(false);
+    fetchSession();
+
+    const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
+      setSession(session);
+      setUser(session?.user ?? null);
+    });
+
+    return () => {
+      authListener.subscription.unsubscribe();
+    };
+  }, []);
+
+  useProtectedRoute(user);
+
+  const value = {
+    signIn: async (email: string, password: string) => {
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) throw error;
+
+      // Schedule notification on successful login
+      await Notifications.scheduleNotificationAsync({
+        content: {
+          title: "Login Bem-sucedido! 🚀",
+          body: 'Bem-vindo de volta!',
+        },
+        trigger: { 
+          type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
+          seconds: 1,
+          repeats: false
+        },
+      });
+    },
+    signOut: async () => {
+      await supabase.auth.signOut();
+    },
+    session,
+    user,
+    loading,
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, login, logout }}>
+    <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
   );
