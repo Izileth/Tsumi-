@@ -1,28 +1,31 @@
-import { View, Text, ScrollView, Pressable } from "react-native";
+import { View, Text, ScrollView, Pressable, Image } from "react-native";
 import { useState, useEffect, useCallback } from "react";
 import { useUserProfile } from "@/app/hooks/useUserProfile";
 import { useClanManagement } from "@/app/hooks/use-clan-management";
 import { supabase } from "@/app/lib/supabase";
 
-// // import { clanMembers, clanTerritories, clanMissions } from "@/constants"; // Removed static imports
-
-// Define a type for dynamic clan members, assuming they are profiles
+import { CustomTabs } from "@/components/ui/custom-tabs";
 type DynamicClanMember = {
   id: string;
   username: string;
   avatar_url: string | null;
   rank: string;
   rank_jp: string;
-  bio: string | null; // Assuming speciality is part of bio or a separate field
-  // Add other fields as needed from the profiles table
+  bio: string | null;
+  loyalty: number;
+  strength: number;
+  intelligence: number;
 };
 
+type TabOption = "members" | "territories" | "missions" | "recruit";
+
 export default function ClanScreen() {
-  const [selectedTab, setSelectedTab] = useState("members");
+  const [selectedTab, setSelectedTab] = useState<TabOption>("members");
   const { profile, refetch: refetchProfile } = useUserProfile();
   const [dynamicClanMembers, setDynamicClanMembers] = useState<DynamicClanMember[]>([]);
   const [dynamicClanTerritories, setDynamicClanTerritories] = useState<any[]>([]);
   const [dynamicClanMissions, setDynamicClanMissions] = useState<any[]>([]);
+  const [recruitableMembers, setRecruitableMembers] = useState<DynamicClanMember[]>([]);
 
 
   // Placeholder onDismiss for useClanManagement
@@ -31,8 +34,8 @@ export default function ClanScreen() {
     console.log("Clan management dismissed.");
   }, []);
 
-  const {
-  } = useClanManagement(profile, refetchProfile, onDismiss);
+
+  const { view, clans, loading } = useClanManagement(profile, refetchProfile, onDismiss);
 
   useEffect(() => {
     const fetchClanMembers = async () => {
@@ -43,7 +46,7 @@ export default function ClanScreen() {
 
       const { data, error } = await supabase
         .from('profiles')
-        .select('id, username, avatar_url, rank, rank_jp, bio') // Select relevant profile fields
+        .select('id, username, avatar_url, rank, rank_jp, bio, loyalty, strength, intelligence') // Select relevant profile fields
         .eq('clan_id', profile.clans.id);
 
       if (error) {
@@ -58,6 +61,30 @@ export default function ClanScreen() {
   }, [profile?.clans?.id]);
 
   useEffect(() => {
+    const fetchRecruitableMembers = async () => {
+      if (!profile?.clans?.id || profile?.id !== profile?.clans?.owner_id) {
+        setRecruitableMembers([]);
+        return;
+      }
+
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('id, username, avatar_url, rank, rank_jp, bio, loyalty, strength, intelligence')
+        .is('clan_id', null);
+
+      if (error) {
+        console.error("Error fetching recruitable members:", error);
+        setRecruitableMembers([]);
+      } else {
+        setRecruitableMembers(data as DynamicClanMember[]);
+      }
+    };
+
+    fetchRecruitableMembers();
+  }, [profile?.clans?.id, profile?.id, profile?.clans?.owner_id]);
+
+
+  useEffect(() => {
     const fetchClanMembers = async () => {
       if (!profile?.clans?.id) {
         setDynamicClanMembers([]);
@@ -66,7 +93,7 @@ export default function ClanScreen() {
 
       const { data, error } = await supabase
         .from('profiles')
-        .select('id, username, avatar_url, rank, rank_jp, bio') // Select relevant profile fields
+        .select('id, username, avatar_url, rank, rank_jp, bio, loyalty, strength, intelligence') // Select relevant profile fields
         .eq('clan_id', profile.clans.id);
 
       if (error) {
@@ -129,7 +156,7 @@ export default function ClanScreen() {
 
 
   const getThreatColor = (threat: string) => {
-    switch(threat) {
+    switch (threat) {
       case "high": return "text-red-500";
       case "medium": return "text-yellow-500";
       default: return "text-green-500";
@@ -137,7 +164,7 @@ export default function ClanScreen() {
   };
 
   const getDifficultyColor = (diff: string) => {
-    switch(diff) {
+    switch (diff) {
       case "hard": return { bg: "bg-red-950/20 border-red-900/50", text: "text-red-500" };
       case "medium": return { bg: "bg-yellow-950/20 border-yellow-900/50", text: "text-yellow-500" };
       default: return { bg: "bg-green-950/20 border-green-900/50", text: "text-green-500" };
@@ -175,9 +202,9 @@ export default function ClanScreen() {
 
       {/* CONTEÚDO */}
       <View className="px-6 pt-6">
-        
+
         {/* Status do Clã */}
-        <View className="bg-zinc-950 border border-neutral-800 rounded-lg p-5 mb-6">
+        <View className="bg-black border border-zinc-900 rounded-lg p-5 mb-6">
           <Text className="text-neutral-500 text-xs uppercase tracking-wider mb-3">
             Status da Família
           </Text>
@@ -191,82 +218,31 @@ export default function ClanScreen() {
               <Text className="text-white text-2xl font-bold">{activeMembersCount}</Text>
             </View>
           </View>
-          
+
           <View className="flex-row gap-4">
             <View className="flex-1">
               <Text className="text-neutral-500 text-xs mb-1">Poder Total</Text>
               <View className="bg-neutral-900 h-2 rounded-full overflow-hidden">
-                <View className="bg-red-600 h-full" style={{ width: '78%' }} />
+                <View className="bg-red-600 h-full" style={{ width: `${(profile?.clans?.power || 0) / 100}%` }} />
               </View>
-              <Text className="text-white text-sm font-semibold mt-1">7,800</Text>
+              <Text className="text-white text-sm font-semibold mt-1">{profile?.clans?.power || 0}</Text>
             </View>
             <View className="flex-1">
               <Text className="text-neutral-500 text-xs mb-1">Reputação</Text>
               <View className="bg-neutral-900 h-2 rounded-full overflow-hidden">
-                <View className="bg-yellow-600 h-full" style={{ width: '65%' }} />
+                <View className="bg-yellow-600 h-full" style={{ width: `${(profile?.clans?.reputation || 0) / 1000}%` }} />
               </View>
-              <Text className="text-white text-sm font-semibold mt-1">6,500</Text>
+              <Text className="text-white text-sm font-semibold mt-1">{profile?.clans?.reputation || 0}</Text>
             </View>
           </View>
         </View>
 
         {/* Tabs de Navegação */}
-        <View className="mb-6">
-          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-            <View className="flex-row gap-3">
-              <Pressable
-                onPress={() => setSelectedTab("members")}
-                className="active:opacity-70"
-              >
-                <View className={`px-5 py-3 rounded-lg border ${
-                  selectedTab === "members" 
-                    ? 'bg-red-600 border-red-500' 
-                    : 'bg-zinc-950 border-neutral-800'
-                }`}>
-                  <Text className={`text-sm font-semibold ${
-                    selectedTab === "members" ? 'text-white' : 'text-neutral-400'
-                  }`}>
-                    👥 Membros
-                  </Text>
-                </View>
-              </Pressable>
-
-              <Pressable
-                onPress={() => setSelectedTab("territories")}
-                className="active:opacity-70"
-              >
-                <View className={`px-5 py-3 rounded-lg border ${
-                  selectedTab === "territories" 
-                    ? 'bg-red-600 border-red-500' 
-                    : 'bg-zinc-950 border-neutral-800'
-                }`}>
-                  <Text className={`text-sm font-semibold ${
-                    selectedTab === "territories" ? 'text-white' : 'text-neutral-400'
-                  }`}>
-                    🗺️ Territórios
-                  </Text>
-                </View>
-              </Pressable>
-
-              <Pressable
-                onPress={() => setSelectedTab("missions")}
-                className="active:opacity-70"
-              >
-                <View className={`px-5 py-3 rounded-lg border ${
-                  selectedTab === "missions" 
-                    ? 'bg-red-600 border-red-500' 
-                    : 'bg-zinc-950 border-neutral-800'
-                }`}>
-                  <Text className={`text-sm font-semibold ${
-                    selectedTab === "missions" ? 'text-white' : 'text-neutral-400'
-                  }`}>
-                    ⚡ Missões
-                  </Text>
-                </View>
-              </Pressable>
-            </View>
-          </ScrollView>
-        </View>
+          <CustomTabs 
+          selectedTab={selectedTab} 
+            setSelectedTab={setSelectedTab}
+            isOwner={profile?.id === profile?.clans?.owner_id}
+          />
 
         {/* MEMBROS TAB */}
         {selectedTab === "members" && (
@@ -279,13 +255,21 @@ export default function ClanScreen() {
             {dynamicClanMembers.map((member) => (
               <View
                 key={member.id}
-                className="bg-zinc-950 border border-neutral-800 rounded-lg p-4 mb-3"
+                className="bg-black border border-zinc-900 rounded-lg p-4 mb-3"
               >
                 <View className="flex-row justify-between items-start mb-3">
                   <View className="flex-row items-center gap-3 flex-1">
                     {/* Placeholder for avatar, replace with Image component if avatar_url is available */}
-                    <Text className="text-4xl">👤</Text> 
-                    <View className="flex-1">
+                    {member.avatar_url ? (
+                      <View className="w-14 h-14 rounded-full overflow-hidden">
+                        <Image source={{ uri: member.avatar_url }} className="w-14 h-14 rounded-full" />
+                      </View>
+                    ) : (
+                      <View className="w-14 h-14 bg-zinc-950 rounded-full flex items-center justify-center">
+                        <Text className="text-zinc-600 text-2xl  font-bold">{member.username.charAt(0).toUpperCase()}</Text>
+                      </View>
+                    )}
+                    <View className="flex-1 ">
                       <Text className="text-white text-base font-bold mb-1">
                         {member.username}
                       </Text>
@@ -316,10 +300,10 @@ export default function ClanScreen() {
                   <View>
                     <View className="flex-row justify-between mb-1">
                       <Text className="text-neutral-500 text-xs">Lealdade</Text>
-                      <Text className="text-white text-xs font-semibold">100%</Text>
+                      <Text className="text-white text-xs font-semibold">{member.loyalty}%</Text>
                     </View>
                     <View className="bg-neutral-900 h-1.5 rounded-full overflow-hidden">
-                      <View className="bg-red-600 h-full" style={{ width: `100%` }} />
+                      <View className="bg-red-600 h-full" style={{ width: `${member.loyalty}%` }} />
                     </View>
                   </View>
 
@@ -327,34 +311,94 @@ export default function ClanScreen() {
                     <View className="flex-1">
                       <View className="flex-row justify-between mb-1">
                         <Text className="text-neutral-500 text-xs">Força</Text>
-                        <Text className="text-white text-xs">90</Text>
+                        <Text className="text-white text-xs">{member.strength}</Text>
                       </View>
                       <View className="bg-neutral-900 h-1.5 rounded-full overflow-hidden">
-                        <View className="bg-orange-600 h-full" style={{ width: `90%` }} />
+                        <View className="bg-orange-600 h-full" style={{ width: `${member.strength}%` }} />
                       </View>
                     </View>
 
                     <View className="flex-1">
                       <View className="flex-row justify-between mb-1">
                         <Text className="text-neutral-500 text-xs">Intel.</Text>
-                        <Text className="text-white text-xs">80</Text>
+                        <Text className="text-white text-xs">{member.intelligence}</Text>
                       </View>
                       <View className="bg-neutral-900 h-1.5 rounded-full overflow-hidden">
-                        <View className="bg-blue-600 h-full" style={{ width: `80%` }} />
+                        <View className="bg-blue-600 h-full" style={{ width: `${member.intelligence}%` }} />
                       </View>
                     </View>
                   </View>
                 </View>
               </View>
             ))}
-
-            <Pressable className="active:opacity-70 mt-2">
-              <View className="bg-red-950/20 border border-red-900/50 rounded-lg py-3 items-center">
-                <Text className="text-red-500 font-bold text-sm">+ RECRUTAR NOVO MEMBRO</Text>
-              </View>
-            </Pressable>
           </View>
         )}
+
+        {/* RECRUIT TAB */}
+        {selectedTab === "recruit" && (
+          <View className="mb-8">
+            <View className="flex-row items-center mb-4">
+              <Text className="text-red-500 text-base font-bold">勧誘</Text>
+              <View className="flex-1 h-px bg-neutral-800 ml-3" />
+            </View>
+
+            {recruitableMembers.map((member) => (
+              <View
+                key={member.id}
+                className="bg-black border border-zinc-900 rounded-lg p-4 mb-3"
+              >
+                <View className="flex-row justify-between items-start mb-3">
+                  <View className="flex-row items-center gap-3 flex-1">
+                    {/* Placeholder for avatar, replace with Image component if avatar_url is available */}
+                    {member.avatar_url ? (
+                      <View className="w-14 h-14 rounded-full overflow-hidden">
+                        <Image source={{ uri: member.avatar_url }} className="w-14 h-14 rounded-full" />
+                      </View>
+                    ) : (
+                      <View className="w-14 h-14 bg-zinc-950 rounded-full flex items-center justify-center">
+                        <Text className="text-zinc-600 text-2xl  font-bold">{member.username.charAt(0).toUpperCase()}</Text>
+                      </View>
+                    )}
+                    <View className="flex-1 ">
+                      <Text className="text-white text-base font-bold mb-1">
+                        {member.username}
+                      </Text>
+                      <View className="flex-row items-center gap-2">
+                        <Text className="text-red-500 text-xs font-semibold">
+                          {member.rank_jp}
+                        </Text>
+                        <Text className="text-neutral-600 text-xs">•</Text>
+                        <Text className="text-neutral-400 text-xs">
+                          {member.rank}
+                        </Text>
+                      </View>
+                    </View>
+                  </View>
+                  <Pressable
+                    onPress={async () => {
+                      if (!profile?.clans?.id) return;
+                      const { error } = await supabase
+                        .from('profiles')
+                        .update({ clan_id: profile.clans.id })
+                        .eq('id', member.id);
+                      if (error) {
+                        console.error("Error recruiting member:", error);
+                      } else {
+                        refetchProfile();
+                      }
+                    }}
+                    className="active:opacity-70"
+                  >
+                    <View className="bg-red-600 px-4 mt-3 py-2 rounded-lg">
+                      <Text className="text-white text-xs font-bold">RECRUTAR</Text>
+                    </View>
+                  </Pressable>
+                </View>
+              </View>
+            ))}
+          </View>
+        )}
+
 
         {/* TERRITÓRIOS TAB */}
         {selectedTab === "territories" && (
@@ -430,7 +474,7 @@ export default function ClanScreen() {
 
             <View className="bg-red-950/20 border-l-4 border-red-600 p-4 rounded-r-lg mb-5">
               <Text className="text-neutral-400 text-xs leading-5">
-                Missões fortalecem o controle territorial e geram recursos. Escolha seus 
+                Missões fortalecem o controle territorial e geram recursos. Escolha seus
                 membros sabiamente baseado na dificuldade da operação.
               </Text>
             </View>

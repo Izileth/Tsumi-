@@ -393,7 +393,7 @@ export default function ProfileScreen() {
           title="Salvar Alterações"
           onPress={handleSave}
           isLoading={saving}
-          className="w-full  bg-red-900/20 border py-3  border-red-800"
+          className="w-full  bg-red-900/20 border py-3 mb-8  border-red-800"
           textClassName="text-sm text-zinc-50 font-bold"
           
         />

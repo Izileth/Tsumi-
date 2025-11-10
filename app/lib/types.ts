@@ -9,6 +9,8 @@ export type Clan = {
   avatar_url?: string | null;
   tag?: string | null;
   emblem?: string | null;
+  power?: number;
+  reputation?: number;
   profiles: {
     username: string;
   } | null;

@@ -1,41 +1,49 @@
+import { useState } from "react";
 import { View, Text, ScrollView, Pressable, ActivityIndicator } from "react-native";
 import { Link } from "expo-router";
 import { useAuth } from "../context/auth-context";
 import { useUserProfile } from "../hooks/useUserProfile";
+import { CustomButton } from "@/components/ui/custom-button";
 
 export default function HomeScreen() {
-    const { logout } = useAuth();
-    const { profile, loading, error } = useUserProfile();
+  const { logout } = useAuth();
+   const [loggingOut, setLoggingOut] = useState(false);
+  const { profile, loading, error } = useUserProfile();
 
-    if (loading) {
-        return (
-            <View className="flex-1 justify-center items-center bg-black">
-                <ActivityIndicator size="large" color="#DC2626" />
-            </View>
-        );
-    }
+    const handleLogout = async () => {
+    setLoggingOut(true);
+    await logout();
+  };
 
-    if (error) {
-        return (
-            <View className="flex-1 justify-center items-center bg-black">
-                <Text className="text-red-500">Erro ao carregar o perfil.</Text>
-            </View>
-        );
-    }
+  if (loading) {
+    return (
+      <View className="flex-1 justify-center items-center bg-black">
+        <ActivityIndicator size="large" color="#DC2626" />
+      </View>
+    );
+  }
 
-    if (!profile) {
-        return (
-            <View className="flex-1 justify-center items-center bg-black px-6">
-                <Text className="text-white text-xl font-bold text-center mb-4">Crie seu Perfil</Text>
-                <Text className="text-neutral-400 text-center mb-6">Complete seu perfil para começar sua jornada.</Text>
-                <Link href="/profile" asChild>
-                    <Pressable className="p-3 bg-red-600 rounded-lg">
-                        <Text className="text-white font-bold">Criar Perfil</Text>
-                    </Pressable>
-                </Link>
-            </View>
-        );
-    }
+  if (error) {
+    return (
+      <View className="flex-1 justify-center items-center bg-black">
+        <Text className="text-red-500">Erro ao carregar o perfil.</Text>
+      </View>
+    );
+  }
+
+  if (!profile) {
+    return (
+      <View className="flex-1 justify-center items-center bg-black px-6">
+        <Text className="text-white text-xl font-bold text-center mb-4">Crie seu Perfil</Text>
+        <Text className="text-neutral-400 text-center mb-6">Complete seu perfil para começar sua jornada.</Text>
+        <Link href="/profile" asChild>
+          <Pressable className="p-3 bg-red-600 rounded-lg">
+            <Text className="text-white font-bold">Criar Perfil</Text>
+          </Pressable>
+        </Link>
+      </View>
+    );
+  }
 
   return (
     <ScrollView className="flex-1 bg-black">
@@ -59,9 +67,9 @@ export default function HomeScreen() {
             <Text className="text-2xl font-bold text-red-500 tracking-widest">
               TSUMI
             </Text>
-            
+
             <View className="h-px w-32 bg-red-600 my-4" />
-            
+
             <Text className="text-neutral-400 text-xs tracking-[0.3em] uppercase">
               Yakuza Brotherhood
             </Text>
@@ -75,14 +83,14 @@ export default function HomeScreen() {
 
       {/* CONTEÚDO PRINCIPAL */}
       <View className="px-6 pt-8">
-        
+
         {/* Boas-vindas */}
         <View className="mb-8">
           <Text className="text-white text-3xl font-bold mb-2">
             Bem-vindo, {profile.username || 'Wakashu'}
           </Text>
           <Text className="text-neutral-400 text-base leading-6">
-            Este é o seu caminho para ascender na hierarquia. Domine os territórios, 
+            Este é o seu caminho para ascender na hierarquia. Domine os territórios,
             complete missões e construa seu império nas sombras de Tóquio.
           </Text>
         </View>
@@ -93,11 +101,11 @@ export default function HomeScreen() {
             <Text className="text-red-500 text-lg font-bold">階級</Text>
             <View className="flex-1 h-px bg-neutral-800 ml-3" />
           </View>
-          
+
           <Text className="text-neutral-300 text-base leading-7 mb-4">
-            O yakuza segue uma estrutura rígida de respeito e lealdade. 
-            Seu rank atual é <Text className="text-red-500 font-bold">{profile.rank_jp || '若衆'} ({profile.rank || 'Wakashu'})</Text>, 
-            o primeiro passo na jornada. Acumule <Text className="text-white font-semibold">pontos de lealdade</Text> para 
+            O yakuza segue uma estrutura rígida de respeito e lealdade.
+            Seu rank atual é <Text className="text-red-500 font-bold">{profile.rank_jp || '若衆'} ({profile.rank || 'Wakashu'})</Text>,
+            o primeiro passo na jornada. Acumule <Text className="text-white font-semibold">pontos de lealdade</Text> para
             subir para Kyodai e eventualmente tornar-se um Oyabun.
           </Text>
         </View>
@@ -108,15 +116,15 @@ export default function HomeScreen() {
             <Text className="text-red-500 text-lg font-bold">仁義</Text>
             <View className="flex-1 h-px bg-neutral-800 ml-3" />
           </View>
-          
+
           <Text className="text-neutral-300 text-base leading-7 mb-3">
-            Jin-Gi representa os princípios fundamentais do yakuza: humanidade e justiça. 
+            Jin-Gi representa os princípios fundamentais do yakuza: humanidade e justiça.
             Estes valores guiam cada decisão e ação dentro da organização.
           </Text>
 
           <View className="bg-red-950/20 border-l-4 border-red-600 p-4 rounded-r-lg">
             <Text className="text-neutral-400 text-sm italic leading-6">
-              &quot Lealdade acima de tudo. O código é absoluto. Traição é paga com sangue. 
+              &quot Lealdade acima de tudo. O código é absoluto. Traição é paga com sangue.
               A honra do clã está acima da vida individual. &quot
             </Text>
           </View>
@@ -128,9 +136,9 @@ export default function HomeScreen() {
             <Text className="text-red-500 text-lg font-bold">作戦</Text>
             <View className="flex-1 h-px bg-neutral-800 ml-3" />
           </View>
-          
+
           <Text className="text-neutral-300 text-base leading-7 mb-4">
-            Gerencie seus territórios, coordene seu clã e execute missões estratégicas. 
+            Gerencie seus territórios, coordene seu clã e execute missões estratégicas.
             Cada ação fortalece sua posição no submundo.
           </Text>
 
@@ -207,20 +215,25 @@ export default function HomeScreen() {
             <Text className="text-red-500 text-lg font-bold">刺青</Text>
             <View className="flex-1 h-px bg-neutral-800 ml-3" />
           </View>
-          
+
           <Text className="text-neutral-300 text-base leading-7">
-            As irezumi (tatuagens tradicionais) são símbolos de comprometimento e coragem. 
-            Cobrem o corpo inteiro, exceto mãos, pés e rosto, permitindo que membros 
-            mantenham aparência respeitável em público. Cada desenho conta uma história 
+            As irezumi (tatuagens tradicionais) são símbolos de comprometimento e coragem.
+            Cobrem o corpo inteiro, exceto mãos, pés e rosto, permitindo que membros
+            mantenham aparência respeitável em público. Cada desenho conta uma história
             de lealdade e sacrifício.
           </Text>
         </View>
-        
-        <Pressable onPress={logout} className="active:opacity-70 mt-4 mb-4 w-full">
-            <View className="bg-red-900/50 border border-red-800 rounded-lg py-3 items-center">
-              <Text className="text-red-400 font-bold text-sm">Sair da Conta</Text>
-            </View>
-          </Pressable>
+
+        <CustomButton
+          title="Sair da Conta"
+          onPress={handleLogout}
+          isLoading={loggingOut}
+          className="h-14 bg-red-600 rounded-sm active:bg-red-700 shadow-lg shadow-red-600/40 w-full"
+          textClassName="text-lg font-bold text-white tracking-wide"
+          
+        />
+
+
 
         {/* Footer com símbolo */}
         <View className="items-center py-10 mb-6">

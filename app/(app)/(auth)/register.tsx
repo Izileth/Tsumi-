@@ -79,7 +79,7 @@ export default function RegisterScreen() {
       {/* Gradient Effects */}
       <View className="absolute -top-24 -right-24 w-72 h-72 bg-red-600 opacity-10 rounded-full" />
       <View className="absolute -bottom-36 -left-36 w-96 h-96 bg-orange-900 opacity-5 rounded-full" />
-      
+
       <View className="flex-1 justify-center items-center px-8">
         {/* Logo */}
         <View className="items-center mb-12">
@@ -169,7 +169,8 @@ export default function RegisterScreen() {
             title="Cadastrar"
             onPress={handleRegister}
             isLoading={loading}
-            className="mt-6 w-full"
+            className="h-14 bg-red-600 rounded-xl active:bg-red-700 shadow-lg shadow-red-600/40 w-full"
+            textClassName="text-lg font-bold text-white tracking-wide"
           />
 
           {/* Divider */}

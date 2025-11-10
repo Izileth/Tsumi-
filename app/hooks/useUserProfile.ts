@@ -32,6 +32,8 @@ export const useUserProfile = () => {
           level_name_jp,
           clans (
             *,
+            power,
+            reputation,
             profiles (
               username
             )
