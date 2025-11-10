@@ -237,7 +237,7 @@ export default function ProfileScreen() {
               )}
             </View>
 
-            <Text className="text-2xl font-black text-white tracking-wider text-center mb-1">{profile.slug || 'N/A'}</Text>
+            <Text className="text-2xl font-black text-white tracking-wider text-center mb-1">k/{profile.slug || 'N/A'}</Text>
             <Text className="text-base font-semibold text-neutral-400 mb-2">{profile.username}</Text>
             <View className="bg-red-600 px-4 py-1.5 rounded-full">
               <Text className="text-white text-xs font-bold tracking-wider">{profile.rank_jp || '...'} • {profile.rank || '...'}</Text>
@@ -264,10 +264,17 @@ export default function ProfileScreen() {
             {/* Level Card */}
             <View className="flex-1 bg-gradient-to-br from-red-950/50 to-neutral-900 border border-red-900/50 rounded-xl p-4">
               <Text className="text-neutral-500 text-xs font-semibold mb-1">LEVEL</Text>
-              <View className="flex-row items-baseline">
-                <Text className="text-red-500 text-3xl font-black">{profile.level || 1}</Text>
-                <Text className="text-red-700 text-lg font-bold ml-1">級</Text>
+              <View className="flex-row items-center">
+                <View className=" flex flex-row  justify-between items-baseline">
+                  <Text className="text-red-500 text-3xl font-black">{profile.level || 1}</Text>
+                  <Text className="text-red-700 text-lg font-bold ml-1">{profile.level_name_jp || 0}</Text>
+                </View>
+                <View>
+                  <Text className="text-neutral-600 text-xs ml-2">{profile.level_name || '...'}</Text>
+                  <Text className="text-neutral-600 text-xs ml-2">{profile.experience || '...'} XP</Text>
+                </View>
               </View>
+
             </View>
 
             {/* Clan Card */}
@@ -299,7 +306,7 @@ export default function ProfileScreen() {
                 <Text className="text-white text-lg font-bold">{formatDate(profile?.joined_date || '2025')}</Text>
               </View>
               <View className="bg-black px-3 py-2 rounded-lg">
-                <Text className="text-red-500 text-2xl">龍</Text>
+                <Text className="text-red-500 text-2xl">{profile.level_name_jp || 0}</Text>
               </View>
             </View>
           </View>
@@ -386,8 +393,9 @@ export default function ProfileScreen() {
           title="Salvar Alterações"
           onPress={handleSave}
           isLoading={saving}
-          className="w-full py-3 mb-4"
-          textClassName="text-sm"
+          className="w-full  bg-red-900/20 border py-3  border-red-800"
+          textClassName="text-sm text-zinc-50 font-bold"
+          
         />
       </AppBottomSheet>
       <ClanManagementModal

@@ -55,6 +55,12 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       const { error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) throw error;
 
+      // Increment login count
+      await supabase.rpc('increment_login_count');
+
+      // Increment xp
+      await supabase.rpc('increment_xp');
+
          // Schedule notification on successful login
       await Notifications.scheduleNotificationAsync({
           content: {

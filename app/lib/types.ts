@@ -32,6 +32,9 @@ export type Profile = {
   rank_jp?: string;
   rank?: string;
   level?: number;
+  experience?: number;
+  level_name?: string;
+  level_name_jp?: string;
   joined_date?: string;
   username_jp?: string;
 };

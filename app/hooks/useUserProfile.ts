@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { AppState } from 'react-native';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../context/auth-context';
 import { Profile } from '../lib/types';
@@ -23,6 +24,12 @@ export const useUserProfile = () => {
         .from('profiles')
                 .select(`
           *,
+          rank,
+          rank_jp,
+          level,
+          experience,
+          level_name,
+          level_name_jp,
           clans (
             *,
             profiles (
@@ -51,6 +58,18 @@ export const useUserProfile = () => {
 
   useEffect(() => {
     fetchProfile();
+  }, [fetchProfile]);
+
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', (nextAppState) => {
+      if (nextAppState === 'active') {
+        fetchProfile();
+      }
+    });
+
+    return () => {
+      subscription.remove();
+    };
   }, [fetchProfile]);
 
   return { profile, loading, error, refetch: fetchProfile };
