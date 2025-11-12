@@ -52,7 +52,6 @@ export const EditTerritorySheet = forwardRef(({ onUpdate, onDelete, territory }:
       ref={sheetRef}
       title="Editar Território"
       titleJP="縄張りを編集"
-      isLoading={isUpdating || isDeleting} // Pass isLoading prop here
     >
       <View className="gap-4 pt-4">
         <View>

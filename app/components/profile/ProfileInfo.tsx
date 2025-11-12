@@ -1,6 +1,6 @@
 import { Pressable, Text, View } from 'react-native';
 import type { Profile } from '@/app/lib/types';
-
+import { formatDate } from '@/app/utils/formatDate';
 type ProfileInfoProps = {
   profile: Profile;
   onClanPress: () => void;
@@ -8,10 +8,6 @@ type ProfileInfoProps = {
   onEditClanEmblemPress: () => void;
 };
 
-const formatDate = (dateString: string) => {
-  const date = new Date(dateString);
-  return date.toLocaleDateString('pt-BR', { month: 'short', year: 'numeric' });
-};
 
 const formatJapaneseName = (name: string | string[] | null | undefined): string => {
   if (Array.isArray(name)) {
@@ -122,7 +118,7 @@ export function ProfileInfo({
         <View className="flex-row items-center justify-between">
           <View>
             <Text className="text-neutral-500 text-xs font-semibold mb-1">MEMBRO DESDE</Text>
-            <Text className="text-white text-lg font-bold">
+            <Text className="text-white text-lg  font-bold">
               {formatDate(profile?.joined_date || '2025')}
             </Text>
           </View>

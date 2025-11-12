@@ -32,7 +32,6 @@ export const AddTerritorySheet = forwardRef(({ onSubmit }: AddTerritorySheetProp
       ref={sheetRef}
       title="Novo Território"
       titleJP="新しい縄張り"
-      isLoading={isLoading} // Pass isLoading prop here
     >
       <View className="gap-4 pt-4">
         <View>

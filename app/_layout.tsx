@@ -71,10 +71,14 @@ const RootLayoutNav = () => {
   );
 };
 
+import { ProfileProvider } from "./context/profile-context";
+
 export default function RootLayout() {
   return (
     <AuthProvider>
-      <RootLayoutNav />
+      <ProfileProvider>
+        <RootLayoutNav />
+      </ProfileProvider>
     </AuthProvider>
   );
 }

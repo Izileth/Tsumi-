@@ -39,6 +39,11 @@ export type Profile = {
   level_name_jp?: string;
   joined_date?: string;
   username_jp?: string;
+    
+  website_url ?: string | null;
+  github_handle?: string | null;
+  twitter_handle?: string | null;
+  discord_handle?: string | null;
 };
 
 export type Territory = {

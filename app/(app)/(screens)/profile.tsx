@@ -1,7 +1,7 @@
 import { useState, useRef, useCallback } from "react";
 import { ScrollView, Text, View, Alert } from "react-native";
 import { useAuth } from '@/app/context/auth-context';
-import { useUserProfile } from '@/app/hooks/useUserProfile';
+import { useProfile } from "@/app/context/profile-context";
 import { ClanManagementModal } from '@/components/clan-management';
 import type { Profile } from '@/app/lib/types';
 import { CustomButton } from '@/components/ui/custom-button';
@@ -14,8 +14,9 @@ import { EditClanEmblemSheet } from "@/app/components/profile/EditClanEmblemShee
 import { supabase } from "@/app/lib/supabase";
 
 export default function ProfileScreen() {
-  const { logout, user } = useAuth();
-  const { profile, loading, error, refetch } = useUserProfile();
+  const { logout } = useAuth();
+  // Data now comes from the single source of truth: ProfileContext
+  const { profile, loading, error, refetchProfile, updateProfile } = useProfile();
 
   const bottomSheetModalRef = useRef<any>(null);
   const clanSheetRef = useRef<any>(null);
@@ -38,21 +39,15 @@ export default function ProfileScreen() {
     editClanEmblemSheetRef.current?.present(profile?.clans?.emblem);
   }, [profile]);
 
-  const updateProfile = async (updates: Partial<Profile>) => {
-    if (!user) return;
-    try {
-      const { error } = await supabase.from('profiles').update(updates).eq('id', user.id);
-      if (error) throw error;
-      await refetch();
-    } catch (error: any) {
-      Alert.alert('Erro', 'Não foi possível atualizar o perfil.');
-      console.error('Error updating profile:', error);
-    }
-  };
-
+  // Use the updateProfile function from the context
   const handleSaveJapaneseName = async (name: string) => {
-    await updateProfile({ username_jp: name });
-    editJapaneseNameSheetRef.current?.dismiss();
+    try {
+      await updateProfile({ username_jp: name });
+      editJapaneseNameSheetRef.current?.dismiss();
+    } catch (e: any) {
+      Alert.alert('Erro', 'Não foi possível atualizar o nome japonês.');
+      console.error('Error updating japanese name:', e);
+    }
   };
 
   const handleSaveClanEmblem = async (emblem: string[]) => {
@@ -64,7 +59,7 @@ export default function ProfileScreen() {
         .update({ emblem: emblemString })
         .eq('id', profile.clan_id);
       if (error) throw error;
-      await refetch();
+      await refetchProfile(); // Use refetchProfile from context
     } catch (error: any) {
       Alert.alert('Erro', 'Não foi possível atualizar o emblema do clã.');
       console.error('Error updating clan emblem:', error);
@@ -92,7 +87,8 @@ export default function ProfileScreen() {
         <Text className="text-white text-xl font-bold text-center mb-4">Crie seu Perfil</Text>
         <Text className="text-neutral-400 text-center mb-6">Complete seu perfil para começar sua jornada.</Text>
         <CustomButton title="Criar Perfil" onPress={handlePresentModal} className="w-full" />
-        <EditProfileSheet ref={bottomSheetModalRef} profile={profile} user={user} refetch={refetch} />
+        {/* EditProfileSheet no longer needs props */}
+        <EditProfileSheet ref={bottomSheetModalRef} />
       </View>
     );
   }
@@ -126,11 +122,12 @@ export default function ProfileScreen() {
         </View>
       </ScrollView>
 
-      <EditProfileSheet ref={bottomSheetModalRef} profile={profile} user={user} refetch={refetch} />
+      {/* EditProfileSheet no longer needs props */}
+      <EditProfileSheet ref={bottomSheetModalRef} />
       <ClanManagementModal
         ref={clanSheetRef}
         profile={profile as Profile}
-        refetchProfile={refetch}
+        refetchProfile={refetchProfile}
       />
       <EditJapaneseNameSheet
         ref={editJapaneseNameSheetRef}

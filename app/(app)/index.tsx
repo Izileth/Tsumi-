@@ -2,14 +2,14 @@ import { useState, useRef } from "react";
 import { View, Text, Pressable, Image, Animated } from "react-native";
 import { Link } from "expo-router";
 import { useAuth } from "../context/auth-context";
-import { useUserProfile } from "../hooks/useUserProfile";
+import { useProfile } from "../context/profile-context";
 import { CustomButton } from "@/components/ui/custom-button";
 import { KanjiLoader } from "@/components/ui/kanji-loader";
 
 export default function HomeScreen() {
   const { logout } = useAuth();
   const [loggingOut, setLoggingOut] = useState(false);
-  const { profile, loading, error } = useUserProfile();
+  const { profile, loading, error } = useProfile();
   
   // Animação do símbolo
   const scrollY = useRef(new Animated.Value(0)).current;

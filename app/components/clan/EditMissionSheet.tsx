@@ -75,7 +75,6 @@ export const EditMissionSheet = forwardRef(({ onUpdate, onDelete, mission, terri
       ref={sheetRef}
       title="Editar Missão"
       titleJP="任務を編集"
-      isLoading={isUpdating || isDeleting} // Pass isLoading prop here
     >
       <View className="gap-4 pt-4">
         <View>

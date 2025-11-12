@@ -1,6 +1,6 @@
 import { View, Text, ScrollView } from "react-native";
 import { useState, useRef } from "react";
-import { useUserProfile } from "@/app/hooks/useUserProfile";
+import { useProfile } from "@/app/context/profile-context";
 import { useClanAssets } from "@/app/hooks/useClanAssets";
 import { useClanMembers } from "@/app/hooks/useClanMembers";
 import { Territory, Mission } from "@/app/lib/types";
@@ -19,7 +19,7 @@ type ClanTab = "members" | "territories" | "missions" | "recruit";
 
 export default function ClanScreen() {
   const [selectedTab, setSelectedTab] = useState<ClanTab>("members");
-  const { profile } = useUserProfile();
+  const { profile } = useProfile();
   
   const isOwner = profile?.id === profile?.clans?.owner_id;
 
