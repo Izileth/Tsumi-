@@ -1,5 +1,4 @@
 import { useState, useEffect, useCallback } from 'react';
-import { AppState } from 'react-native';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../context/auth-context';
 import { Profile } from '../lib/types';
@@ -62,17 +61,84 @@ export const useUserProfile = () => {
     fetchProfile();
   }, [fetchProfile]);
 
-  useEffect(() => {
-    const subscription = AppState.addEventListener('change', (nextAppState) => {
-      if (nextAppState === 'active') {
-        fetchProfile();
+  const updateProfile = async (updates: Partial<Profile>) => {
+    if (!user) return null;
+
+    setLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .update(updates)
+        .eq('id', user.id)
+        .select(`
+          *,
+          rank,
+          rank_jp,
+          level,
+          experience,
+          level_name,
+          level_name_jp,
+          clans (
+            *,
+            power,
+            reputation,
+            profiles (
+              username
+            )
+          )
+        `)
+        .single();
+
+      if (error) throw error;
+      setProfile(data as Profile);
+      return data;
+    } catch (e) {
+      setError(e);
+      return null;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const uploadProfileAsset = async (file: any, assetType: 'avatar' | 'banner') => {
+    if (!file || !user) return null;
+
+    try {
+      const fileExt = file.uri.split('.').pop();
+      const fileName = `${assetType}-${Date.now()}.${fileExt}`;
+      const filePath = `users/${user.id}/${fileName}`;
+
+      const formData = new FormData();
+      formData.append('file', {
+        uri: file.uri,
+        name: fileName,
+        type: file.type || `image/${fileExt}`,
+      } as any);
+
+      const { error: uploadError } = await supabase.storage
+        .from('assets')
+        .upload(filePath, formData, {
+          cacheControl: '3600',
+          upsert: true,
+        });
+
+      if (uploadError) {
+        throw uploadError;
       }
-    });
 
-    return () => {
-      subscription.remove();
-    };
-  }, [fetchProfile]);
+      const { data: { publicUrl } } = supabase.storage
+        .from('assets')
+        .getPublicUrl(filePath);
 
-  return { profile, loading, error, refetch: fetchProfile };
+      // This function should only upload and return the URL.
+      // The calling component is responsible for updating the profile.
+      return publicUrl;
+    } catch (e: any) {
+      // Alert.alert('Erro ao fazer upload do arquivo', e.message);
+      console.error('Upload Error:', e);
+      return null;
+    }
+  };
+
+  return { profile, loading, error, refetch: fetchProfile, updateProfile, uploadProfileAsset };
 };

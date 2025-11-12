@@ -1,4 +1,4 @@
-import React, { forwardRef, useImperativeHandle, useRef, useState, useCallback } from 'react';
+import React, { forwardRef, useImperativeHandle, useRef, useState, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
@@ -14,7 +14,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
-const DEFAULT_SNAP_POINT = SCREEN_HEIGHT * 0.95; // 95% of screen height
+const DEFAULT_SNAP_POINT = SCREEN_HEIGHT * 1.0; // 99% of screen height
 
 type AppBottomSheetProps = {
   title?: string;
@@ -90,7 +90,7 @@ export const AppBottomSheet = forwardRef<any, AppBottomSheetProps>(
 
     return (
       <Modal transparent visible={isVisible} onRequestClose={animateClose}>
-        <Pressable className="flex-1" onPress={animateClose}>
+        <Pressable className="flex-1 bg-black/50" onPress={animateClose}>
           <KeyboardAvoidingView
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
             style={{ flex: 1 }}

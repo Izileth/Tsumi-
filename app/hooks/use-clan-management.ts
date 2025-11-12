@@ -64,20 +64,22 @@ export const useClanManagement = (profile: Profile | null | undefined, refetchPr
     try {
       const fileExt = uri.split('.').pop();
       const fileName = `${type}-${Date.now()}.${fileExt}`;
-      const filePath = `${clanId}/${fileName}`;
-      const fileType = `image/${fileExt}`;
+      const filePath = `clans/${clanId}/${fileName}`;
 
-      const response = await fetch(uri);
-      const blob = await response.blob();
+      const formData = new FormData();
+      formData.append('file', {
+        uri,
+        name: fileName,
+        type: `image/${fileExt}`,
+      } as any);
 
-      const { data, error } = await supabase.storage.from('clan-assets').upload(filePath, blob, {
-        contentType: fileType,
+      const { data, error } = await supabase.storage.from('assets').upload(filePath, formData, {
         upsert: true,
       });
 
       if (error) throw error;
 
-      const { data: { publicUrl } } = supabase.storage.from('clan-assets').getPublicUrl(data.path);
+      const { data: { publicUrl } } = supabase.storage.from('assets').getPublicUrl(data.path);
       return publicUrl;
     } catch (e: any) {
       Alert.alert('Erro ao fazer upload da imagem', e.message);
