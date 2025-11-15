@@ -27,8 +27,8 @@ export function TerritoryMapList({ districts, territories }: TerritoryListProps)
   }));
 
   return (
-    <ScrollView className="flex-1">
-      <View className="p-4">
+    <ScrollView className="flex-1 w-full max-w-full">
+      <View className="w-full max-w-full">
         {/* Header */}
         <View className="mb-6">
           <Text className="text-white text-2xl font-bold mb-2">

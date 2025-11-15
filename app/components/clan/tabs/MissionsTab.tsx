@@ -9,6 +9,7 @@ type MissionsTabProps = {
   isOwner: boolean;
   onAdd: () => void;
   onEdit: (mission: Mission) => void;
+  onComplete: (missionId: string) => void;
 };
 
 
@@ -73,7 +74,7 @@ const LevelBadge = ({ level }: { level?: string | number }) => {
 
 
 
-export function MissionsTab({ missions, loading, isOwner, onAdd, onEdit }: MissionsTabProps) {
+export function MissionsTab({ missions, loading, isOwner, onAdd, onEdit, onComplete }: MissionsTabProps) {
 
   if (loading) {
 
@@ -192,6 +193,16 @@ export function MissionsTab({ missions, loading, isOwner, onAdd, onEdit }: Missi
               </Text>
 
             </View>
+
+            {/* Botão de completar missão */}
+            <Pressable className="active:opacity-70 mb-2" onPress={() => onComplete(mission.id)}>
+              <View className="bg-green-600 rounded-lg py-3 items-center flex-row justify-center">
+                <FontAwesome name="check-circle" size={14} color="white" />
+                <Text className="text-white font-bold text-sm ml-2">
+                  COMPLETAR MISSÃO
+                </Text>
+              </View>
+            </Pressable>
 
             {/* Botão de gerenciamento */}
 

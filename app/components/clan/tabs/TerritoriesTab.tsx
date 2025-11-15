@@ -33,7 +33,7 @@ export function TerritoriesTab({ territories, loading, isOwner, onAdd, onEdit }:
   };
 
   return (
-    <View className="mb-8">
+    <View className="mb max-w-full">
       {/* Header */}
       <View className="flex-row items-center mb-4">
         <Text className="text-red-500 text-base font-bold">縄張り</Text>

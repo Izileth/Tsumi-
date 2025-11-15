@@ -1,20 +1,25 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../lib/supabase';
 import { Territory, Mission, ClanEvent } from '../lib/types';
+import { useAuth } from '../context/auth-context';
+
 
 export const useClanAssets = (clanId: string | undefined) => {
+  const { user } = useAuth();
   const [territories, setTerritories] = useState<Territory[]>([]);
   const [missions, setMissions] = useState<Mission[]>([]);
   const [events, setEvents] = useState<ClanEvent[]>([]);
+  const [availableTerritories, setAvailableTerritories] = useState<Territory[]>([]);
   const [loading, setLoading] = useState(true);
 
   const fetchAssets = useCallback(async () => {
     if (!clanId) return;
     setLoading(true);
 
-    const [territoryRes, eventRes] = await Promise.all([
+    const [territoryRes, eventRes, availableTerritoriesRes] = await Promise.all([
       supabase.from('territories').select('*').eq('clan_id', clanId),
-      supabase.from('clan_events').select('*').eq('clan_id', clanId).order('created_at', { ascending: false })
+      supabase.from('clan_events').select('*').eq('clan_id', clanId).order('created_at', { ascending: false }),
+      supabase.from('territories').select('*').is('clan_id', null),
     ]);
 
     const { data: territoryData, error: territoryError } = territoryRes;
@@ -30,6 +35,13 @@ export const useClanAssets = (clanId: string | undefined) => {
       setEvents([]);
     } else {
       setEvents(eventRes.data || []);
+    }
+
+    if (availableTerritoriesRes.error) {
+      console.error('Error fetching available territories:', availableTerritoriesRes.error);
+      setAvailableTerritories([]);
+    } else {
+      setAvailableTerritories(availableTerritoriesRes.data || []);
     }
 
     // Fetch missions based on territories
@@ -70,8 +82,30 @@ export const useClanAssets = (clanId: string | undefined) => {
     } else if (data) {
       await supabase.from('clan_events').insert({
         clan_id: clanId,
+        event_type: 'territory_created', // Novo tipo de evento para criação
+        description: `Um novo território, ${name}, foi estabelecido.`,
+        metadata: { territory_id: data.id }
+      });
+      await fetchAssets();
+    }
+  };
+
+  const annexTerritory = async (territoryId: string) => {
+    if (!clanId) return;
+    const { data, error } = await supabase
+      .from('territories')
+      .update({ clan_id: clanId })
+      .eq('id', territoryId)
+      .select()
+      .single();
+    
+    if (error) {
+      console.error('Error annexing territory:', error);
+    } else if (data) {
+      await supabase.from('clan_events').insert({
+        clan_id: clanId,
         event_type: 'territory_annexed',
-        description: `O território ${name} foi anexado.`,
+        description: `O território ${data.name} foi anexado.`,
         metadata: { territory_id: data.id }
       });
       await fetchAssets();
@@ -87,12 +121,34 @@ export const useClanAssets = (clanId: string | undefined) => {
   }) => {
     const { name, description, territoryId, reward, level } = data;
 
-    const { error } = await supabase
+    const { data: newMission, error } = await supabase
       .from('missions')
-      .insert([{ name, description, reward, territory_id: territoryId, level }]);
+      .insert([{ name, description, reward, territory_id: territoryId, level }])
+      .select()
+      .single();
 
     if (error) {
       console.error('Error creating mission:', error);
+    } else if (newMission) {
+      await supabase.from('clan_events').insert({
+        clan_id: clanId,
+        event_type: 'mission_created',
+        description: `Nova missão disponível: ${name}.`,
+        metadata: { mission_id: newMission.id }
+      });
+      await fetchAssets();
+    }
+  };
+
+  const completeMission = async (missionId: string) => {
+    if (!user) return;
+    const { error } = await supabase.rpc('complete_mission', {
+      p_mission_id: missionId,
+      p_member_id: user.id,
+    });
+
+    if (error) {
+      console.error('Error completing mission:', error);
     } else {
       await fetchAssets();
     }
@@ -114,11 +170,11 @@ export const useClanAssets = (clanId: string | undefined) => {
   const deleteTerritory = async (id: string) => {
     const { error } = await supabase
       .from('territories')
-      .delete()
+      .update({ clan_id: null })
       .eq('id', id);
 
     if (error) {
-      console.error('Error deleting territory:', error);
+      console.error('Error abandoning territory:', error);
     } else {
       await fetchAssets();
     }
@@ -158,5 +214,5 @@ export const useClanAssets = (clanId: string | undefined) => {
     }
   };
 
-  return { territories, missions, events, loading, createTerritory, createMission, updateTerritory, deleteTerritory, updateMission, deleteMission };
+  return { territories, missions, events, availableTerritories, loading, createTerritory, annexTerritory, createMission, completeMission, updateTerritory, deleteTerritory, updateMission, deleteMission };
 };

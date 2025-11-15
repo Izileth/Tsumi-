@@ -24,7 +24,7 @@ export default function ClanScreen() {
   
   const isOwner = profile?.id === profile?.clans?.owner_id;
 
-  const { territories, missions, events, loading: assetsLoading, createTerritory, createMission, updateTerritory, deleteTerritory, updateMission, deleteMission } = useClanAssets(profile?.clans?.id);
+  const { territories, missions, events, availableTerritories, loading: assetsLoading, createTerritory, annexTerritory, createMission, completeMission, updateTerritory, deleteTerritory, updateMission, deleteMission } = useClanAssets(profile?.clans?.id);
   const { members, recruitableMembers, loading: membersLoading, recruitMember } = useClanMembers(profile?.clans?.id, isOwner, profile?.id);
 
   const addTerritorySheetRef = useRef<any>(null);
@@ -35,12 +35,20 @@ export default function ClanScreen() {
   const [selectedTerritory, setSelectedTerritory] = useState<Territory | null>(null);
   const [selectedMission, setSelectedMission] = useState<Mission | null>(null);
 
-  const handleAddTerritory = async (name: string, description: string) => {
+  const handleCreateNewTerritory = async (name: string, description: string) => {
     await createTerritory(name, description);
+  };
+
+  const handleAnnexExistingTerritory = async (territoryId: string) => {
+    await annexTerritory(territoryId);
   };
 
   const handleAddMission = async (data: { name: string; description: string; territoryId: string; reward: { money: number; reputation: number; }; level: number; }) => {
     await createMission(data);
+  };
+
+  const handleCompleteMission = async (missionId: string) => {
+    await completeMission(missionId);
   };
 
   const handleUpdateTerritory = async (id: string, name: string, description: string) => {
@@ -84,7 +92,7 @@ export default function ClanScreen() {
       case 'territories':
         return <TerritoriesTab territories={territories} loading={assetsLoading} isOwner={isOwner} onAdd={() => addTerritorySheetRef.current?.present()} onEdit={openEditTerritorySheet} />;
       case 'missions':
-        return <MissionsTab missions={missions} loading={assetsLoading} isOwner={isOwner} onAdd={() => addMissionSheetRef.current?.present()} onEdit={openEditMissionSheet} />;
+        return <MissionsTab missions={missions} loading={assetsLoading} isOwner={isOwner} onAdd={() => addMissionSheetRef.current?.present()} onEdit={openEditMissionSheet} onComplete={handleCompleteMission} />;
       case 'events':
         return <EventsTab events={events} loading={assetsLoading} />;
       case 'recruit':
@@ -182,7 +190,12 @@ export default function ClanScreen() {
           </View>
         </View>
       </ScrollView>
-      <AddTerritorySheet ref={addTerritorySheetRef} onSubmit={handleAddTerritory} />
+      <AddTerritorySheet 
+        ref={addTerritorySheetRef} 
+        onCreate={handleCreateNewTerritory} 
+        onAnnex={handleAnnexExistingTerritory} 
+        availableTerritories={availableTerritories} 
+      />
       <AddMissionSheet ref={addMissionSheetRef} onSubmit={handleAddMission} territories={territories} />
       <EditTerritorySheet ref={editTerritorySheetRef} territory={selectedTerritory} onUpdate={handleUpdateTerritory} onDelete={handleDeleteTerritory} />
       <EditMissionSheet ref={editMissionSheetRef} mission={selectedMission} territories={territories} onUpdate={handleUpdateMission} onDelete={handleDeleteMission} />
