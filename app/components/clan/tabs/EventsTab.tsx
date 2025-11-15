@@ -15,8 +15,10 @@ const EventIcon = ({ type }: { type: string }) => {
   const iconMap: { [key: string]: any } = {
     new_member: { name: 'user-plus', color: '#34d399' },
     mission_created: { name: 'plus-circle', color: '#34d399' },
-    territory_annexed: { name: 'map-marker', color: '#f87171' },
     mission_completed: { name: 'check-circle', color: '#60a5fa' },
+    territory_annexed: { name: 'plus-circle', color: '#34d399' },
+    territory_updated: { name: 'pencil', color: '#fb923c' },
+    territory_detached: { name: 'minus-circle', color: '#f87171' },
     default: { name: 'history', color: '#9ca3af' },
   };
   const { name, color } = iconMap[type] || iconMap.default;
@@ -27,17 +29,29 @@ const EventTypeLabel = ({ type }: { type: string }) => {
   const labelMap: { [key: string]: { text: string; bgColor: string; textColor: string } } = {
     new_member: { text: 'Novo Membro', bgColor: 'bg-emerald-900/30', textColor: 'text-emerald-400' },
     mission_created: { text: 'Missão Criada', bgColor: 'bg-emerald-900/30', textColor: 'text-emerald-400' },
-    territory_annexed: { text: 'Território', bgColor: 'bg-red-900/30', textColor: 'text-red-400' },
     mission_completed: { text: 'Completada', bgColor: 'bg-blue-900/30', textColor: 'text-blue-400' },
+    territory_annexed: {
+      text: 'Território Anexado',
+      bgColor: 'bg-emerald-900/30',
+      textColor: 'text-emerald-400',
+    },
+    territory_updated: {
+      text: 'Território Alterado',
+      bgColor: 'bg-orange-900/30',
+      textColor: 'text-orange-400',
+    },
+    territory_detached: {
+      text: 'Território Perdido',
+      bgColor: 'bg-red-900/30',
+      textColor: 'text-red-400',
+    },
     default: { text: 'Evento', bgColor: 'bg-zinc-800/50', textColor: 'text-neutral-400' },
   };
   const { text, bgColor, textColor } = labelMap[type] || labelMap.default;
-  
+
   return (
     <View className={`${bgColor} px-2 py-1 rounded-md`}>
-      <Text className={`${textColor} text-xs font-semibold uppercase tracking-wide`}>
-        {text}
-      </Text>
+      <Text className={`${textColor} text-xs font-semibold uppercase tracking-wide`}>{text}</Text>
     </View>
   );
 };
@@ -46,8 +60,10 @@ const EventCategory = ({ type }: { type: string }) => {
   const categoryMap: { [key: string]: string } = {
     new_member: 'Membros',
     mission_created: 'Missões',
-    territory_annexed: 'Territórios',
     mission_completed: 'Missões',
+    territory_annexed: 'Territórios',
+    territory_updated: 'Territórios',
+    territory_detached: 'Territórios',
     default: 'Geral',
   };
   return (

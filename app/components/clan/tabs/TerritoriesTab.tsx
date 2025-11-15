@@ -73,7 +73,7 @@ export function TerritoriesTab({ territories, loading, isOwner, onAdd, onEdit }:
           </Text>
         </View>
       ) : (
-        <View className="space-y-3">
+        <View className="space-y-3 gap-3">
           {territories.map((territory) => {
             const isExpanded = expandedId === territory.id;
 
@@ -83,7 +83,7 @@ export function TerritoriesTab({ territories, loading, isOwner, onAdd, onEdit }:
                 onPress={() => toggleExpand(territory.id)}
                 className="active:opacity-80"
               >
-                <View className="bg-black border border-zinc-900 rounded-lg overflow-hidden">
+                <View className="bg-black border  border-zinc-900 rounded-lg overflow-hidden">
                   {/* Header compacto */}
                   <View className="p-4 flex-row items-center justify-between">
                     <View className="flex-1 mr-3">
